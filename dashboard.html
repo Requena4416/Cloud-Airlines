@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cloud Airlines — Dashboard</title>
+  <link rel="icon" href="logo.png" type="image/icon type">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="dashboard.html">
+      <span class="logo"><img src="logo.png" alt="Cloud Airlines logo"></span>
+      <div>
+        <h1>Cloud Airlines</h1>
+        <div class="small muted">Employee Policy Portal</div>
+      </div>
+    </a>
+
+    <div class="nav-right">
+      <div id="user-email" class="muted"></div>
+      <button id="logout-btn" class="btn-ghost">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout dashboard-layout">
+      <aside class="sidebar" aria-label="Departments">
+        <div style="font-weight:700;margin-bottom:8px">Departments</div>
+        <nav id="dept-list" class="tree" aria-label="department list">
+          <!-- Filled by JS -->
+        </nav>
+        <!-- Update button is part of the navbar but visually pinned to bottom -->
+        <a id="update-btn" class="file update-btn" href="#">Update</a>
+      </aside>
+
+      <section class="content">
+        <div class="content-header">
+          <div class="breadcrumbs">Home / <strong id="current-dept">Overview</strong></div>
+          <form id="search-form" class="search-form" role="search" aria-label="Search policies">
+            <input id="search-input" type="search" placeholder="Search policies, e.g. 'leave'" aria-label="Search policies">
+          </form>
+        </div>
+
+        <div id="dashboard-area">
+          <div id="search-results" class="search-results" hidden aria-live="polite">
+            <!-- Live search results appear here -->
+          </div>
+
+          <div id="folders" class="folders">
+            <!-- Department folders inserted here -->
+          </div>
+
+          <div id="documents" class="doc-list" hidden>
+            <!-- Documents list populated here -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Update request modal (hidden by default) -->
+  <div id="update-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="update-modal-title">
+    <div class="modal-backdrop" id="update-modal-backdrop"></div>
+    <div class="modal-panel" role="document">
+      <h3 id="update-modal-title">Request Policy Update</h3>
+      <form id="update-form">
+        <label for="update-dept">Department</label>
+        <select id="update-dept" required></select>
+
+        <label for="update-doc">Document</label>
+        <select id="update-doc" required></select>
+
+        <label for="update-comment">Comment / Description</label>
+        <textarea id="update-comment" rows="4" placeholder="Describe the requested change..." required></textarea>
+
+        <div class="modal-actions">
+          <button type="button" id="update-cancel" class="btn-ghost">Cancel</button>
+          <button type="submit" class="btn-primary">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="small">© <span id="year">2026</span> Cloud Airlines</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
