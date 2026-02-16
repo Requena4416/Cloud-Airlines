@@ -9,35 +9,20 @@ const AWS_CONFIG = {
     identityPoolId: 'us-east-2:2197d3cd-ebf5-4902-8515-68891991917e' 
 };
 
-// Initialize the Cognito User Pool object
+// Initialize Cognito User Pool
 const poolData = { UserPoolId: AWS_CONFIG.userPoolId, ClientId: AWS_CONFIG.clientId };
 const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
 /* --------------------------- UI Content Data --------------------------- */
 const MOCK_DEPARTMENTS = [
   { id: 'hr', name: 'Human Resources', description: 'Policies for employees, benefits, and payroll.' },
-  { id: 'rev', name: 'Reservations', description: 'Booking and reservation policies.' },
-  { id: 'sal', name: 'Sales', description: 'Ticket sales and customer service policies.' }
+  { id: 'reservations', name: 'Reservations', description: 'Booking and reservation policies.' },
+  { id: 'sales', name: 'Sales', description: 'Ticket sales and customer service policies.' }
 ];
-
-const MOCK_DOCUMENTS = {
-  hr: [
-    { id: 'hr-1', title: 'Code of Conduct', updated: '2026-01-01' },
-    { id: 'hr-2', title: 'Leave Policy', updated: '2025-11-10' }
-  ],
-  rev: [
-    { id: 'rev-1', title: 'Booking Policy', updated: '2026-01-15' },
-    { id: 'rev-2', title: 'Reservation Policy', updated: '2025-09-20' }
-  ],
-  sal: [
-    { id: 'sal-1', title: 'Customer Service Policy', updated: '2025-12-01' },
-    { id: 'sal-2', title: 'Ticketing and Sales', updated: '2026-01-05' }
-  ]
-};
 
 /* ---------------------- AWS API Functions ---------------------- */
 
-// 1. Real Cognito Authentication
+// 1. Authenticate with Cognito and setup Identity Pool Credentials
 function apiAuth(email, password) {
     return new Promise((resolve, reject) => {
         const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
@@ -54,7 +39,7 @@ function apiAuth(email, password) {
             onSuccess: (session) => {
                 const idToken = session.getIdToken().getJwtToken();
 
-                // Connect to Identity Pool for temporary AWS credentials
+                // Configure AWS SDK with the Identity Pool and JWT Token
                 AWS.config.region = AWS_CONFIG.region;
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
                     IdentityPoolId: AWS_CONFIG.identityPoolId,
@@ -63,7 +48,7 @@ function apiAuth(email, password) {
                     }
                 });
 
-                // Refresh credentials to ensure browser has active keys
+                // Refresh credentials to ensure the 'Admin' role is assumed
                 AWS.config.credentials.refresh((err) => {
                     if (err) return reject(err);
                     resolve({ 
@@ -79,7 +64,7 @@ function apiAuth(email, password) {
                 
                 cognitoUser.completeNewPasswordChallenge(newPassword, {}, {
                     onSuccess: () => {
-                        alert("Password updated! Please log in with your new password.");
+                        alert("Password updated! Please log in.");
                         window.location.reload();
                     },
                     onFailure: (err) => reject(err)
@@ -89,7 +74,7 @@ function apiAuth(email, password) {
     });
 }
 
-// 2. Real DynamoDB Submission
+// 2. DynamoDB Submission
 async function apiSubmitUpdateRequest(payload) {
     const docClient = new AWS.DynamoDB.DocumentClient();
     const params = {
@@ -105,25 +90,8 @@ async function apiSubmitUpdateRequest(payload) {
     return docClient.put(params).promise();
 }
 
-/* ---------------------- Helper API functions ---------------------- */
 function apiFetchDepartments() {
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_DEPARTMENTS), 300));
-}
-
-function apiFetchDocumentsForDept(deptId) {
-  return new Promise((resolve) => setTimeout(() => resolve(MOCK_DOCUMENTS[deptId] || []), 300));
-}
-
-function apiFetchDocument(docId) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      for (const k of Object.keys(MOCK_DOCUMENTS)) {
-        const d = MOCK_DOCUMENTS[k].find(x => x.id === docId);
-        if (d) return resolve(Object.assign({ department: k }, d));
-      }
-      resolve(null);
-    }, 300);
-  });
 }
 
 /* ---------------------- DOM / App Logic ---------------------- */
@@ -155,7 +123,7 @@ if (document.getElementById('login-form')) {
   });
 }
 
-// Dashboard logic
+// Dashboard initialization
 if (document.getElementById('dept-list') || document.getElementById('folders')) {
   const user = (() => {
     try { return JSON.parse(localStorage.getItem('cloud_user')); } catch(e){return null}
@@ -179,7 +147,7 @@ if (document.getElementById('dept-list') || document.getElementById('folders')) 
         renderDepartmentList(depts);
         renderFolders(depts);
       } catch (err) {
-        console.error('Failed to load departments', err);
+        console.error('Failed to load dashboard', err);
       }
     })();
   }
@@ -211,26 +179,93 @@ function renderFolders(depts) {
   });
 }
 
+// MAIN S3 LOGIC: Fetches files based on folder name (dept.id)
 async function onDeptClick(dept) {
   const docsArea = document.getElementById('documents');
   const folders = document.getElementById('folders');
   const title = document.getElementById('current-dept');
+  
   if (title) title.textContent = dept.name;
   if (folders) folders.hidden = true;
   if (docsArea) docsArea.hidden = false;
 
-  docsArea.innerHTML = '<div class="muted">Loading documents...</div>';
-  const docs = await apiFetchDocumentsForDept(dept.id);
-  docsArea.innerHTML = '';
-  docs.forEach(doc => {
-    const d = document.createElement('div');
-    d.className = 'doc-item';
-    d.innerHTML = `<strong>${escapeHtml(doc.title)}</strong><br><small>Updated: ${escapeHtml(doc.updated)}</small>`;
-    docsArea.appendChild(d);
-  });
+  docsArea.innerHTML = '<div class="muted">Verifying credentials...</div>';
+
+  try {
+    // 1. RECOVERY LOGIC: If credentials are null, rebuild them from the active session
+    if (!AWS.config.credentials) {
+        const cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser) {
+            await new Promise((resolve, reject) => {
+                cognitoUser.getSession((err, session) => {
+                    if (err) return reject(err);
+                    const idToken = session.getIdToken().getJwtToken();
+                    
+                    AWS.config.region = AWS_CONFIG.region;
+                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: AWS_CONFIG.identityPoolId,
+                        Logins: {
+                            [`cognito-idp.${AWS_CONFIG.region}.amazonaws.com/${AWS_CONFIG.userPoolId}`]: idToken
+                        }
+                    });
+                    resolve();
+                });
+            });
+        } else {
+            throw new Error("No active session found. Please log in again.");
+        }
+    }
+
+    // 2. Refresh the credentials to assume the Admin Role
+    await AWS.config.credentials.refreshPromise();
+    
+    // 3. Initialize S3
+    const s3 = new AWS.S3({ 
+      apiVersion: '2006-03-01', 
+      region: AWS_CONFIG.region,
+      signatureVersion: 'v4'
+    });
+
+    // 4. Fetch the data
+    const s3Data = await s3.listObjectsV2({ 
+      Bucket: 'cloud-airlines-documents',
+      Prefix: `policies/${dept.id}/` 
+    }).promise();
+
+    docsArea.innerHTML = ''; 
+
+    const files = s3Data.Contents.filter(item => item.Key !== `policies/${dept.id}/`);
+
+    if (files.length === 0) {
+      docsArea.innerHTML = `<div class="muted">No policies found in: policies/${dept.id}/</div>`;
+    } else {
+      files.forEach(file => {
+        const url = s3.getSignedUrl('getObject', { 
+          Bucket: 'cloud-airlines-documents', 
+          Key: file.Key, 
+          Expires: 300 
+        });
+        
+        const fileName = file.Key.split('/').pop(); 
+        const d = document.createElement('div');
+        d.className = 'doc-item';
+        d.innerHTML = `
+          <strong>📄 ${escapeHtml(fileName)}</strong><br>
+          <small><a href="${url}" target="_blank" style="color: #0056b3;">View / Download Policy</a></small>
+        `;
+        docsArea.appendChild(d);
+      });
+    }
+  } catch (err) {
+    console.error("S3 Error Details:", err);
+    docsArea.innerHTML = `<div class="error">
+      <strong>Access Denied</strong><br>
+      <small>${err.message}</small>
+    </div>`;
+  }
 }
 
-/* ---------------------- Update Policies Logic ---------------------- */
+/* ---------------------- Update Policies Modal Logic ---------------------- */
 const updateBtn = document.getElementById('update-btn');
 const updateModal = document.getElementById('update-modal');
 const updateForm = document.getElementById('update-form');
@@ -261,7 +296,7 @@ if (updateForm) updateForm.addEventListener('submit', async (e) => {
         await apiSubmitUpdateRequest(payload);
         updateModal.classList.remove('show');
         updateModal.hidden = true;
-        alert('Update request submitted to AWS DynamoDB!');
+        alert('Update request submitted successfully!');
     } catch (err) {
         console.error(err);
         alert('Failed to submit: ' + err.message);
