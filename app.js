@@ -161,7 +161,8 @@ function renderDepartmentList(depts) {
     const a = document.createElement('a');
     a.href = '#';
     a.textContent = d.name;
-    a.addEventListener('click', (ev) => { ev.preventDefault(); onDeptClick(d); });
+    a.dataset.deptId = d.id;
+    a.addEventListener('click', (ev) => { ev.preventDefault(); onDeptClick(d, a); });
     list.appendChild(a);
   });
 }
@@ -180,10 +181,19 @@ function renderFolders(depts) {
 }
 
 // MAIN S3 LOGIC: Fetches files based on folder name (dept.id)
-async function onDeptClick(dept) {
+async function onDeptClick(dept, linkEl) {
   const docsArea = document.getElementById('documents');
   const folders = document.getElementById('folders');
   const title = document.getElementById('current-dept');
+  
+  // Remove active class from all department links
+  const list = document.getElementById('dept-list');
+  if (list) {
+    list.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+  }
+  
+  // Add active class to clicked link
+  if (linkEl) linkEl.classList.add('active');
   
   if (title) title.textContent = dept.name;
   if (folders) folders.hidden = true;

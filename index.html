@@ -26,23 +26,19 @@
         <main class="centered">
           <section class="card login-card" aria-labelledby="login-title">
             <h2 id="login-title">Employee sign in</h2>
-            <p class="muted">Sign in with your corporate email. (This is a static demo — no real authentication yet.)</p>
-
+            
             <form id="login-form" novalidate>
               <label for="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="you@cloudairlines.com" required>
+              <input id="email" name="email" type="email" placeholder="You@email.com" required>
 
               <label for="password">Password</label>
-              <input id="password" name="password" type="password" placeholder="Your password" required>
+              <input id="password" name="password" type="password" placeholder="Password" required>
 
               <div id="login-error" class="error" role="alert" aria-live="assertive" hidden></div>
 
-              <button type="submit" class="btn-primary">Sign in</button>
+              <button type="submit" class="btn-primary" style="background-color: #9791d7; color: white;">Sign in</button>
             </form>
 
-            <div class="help muted">
-              Demo credentials: <strong>demo@cloudairlines.com / Password123</strong>
-            </div>
           </section>
         </main>
 

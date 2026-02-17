@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-:root{--accent:#0b6fb8;--dark:#0b2340;--muted:#6b7280;--bg:#f7fbff}
+:root{--accent:#79c3b3;--accent-alt:#9791d7;--dark:#0b2340;--muted:#6b7280;--bg:#f7fbff}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:var(--bg)}
 body{min-height:100vh;display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--dark)}
@@ -38,14 +37,17 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .btn-ghost{background:transparent;border:1px solid #e6eef9;color:var(--dark);padding:8px 12px;border-radius:8px;cursor:pointer}
 .error{color:#b91c1c;background:#fff1f2;padding:8px;border-radius:8px;border:1px solid #fecaca;margin-top:8px}
 
-/* Centered login */
-.centered{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 140px)}
-.card{background:white;padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(12,20,40,.06);max-width:520px}
+/* Centered login with backdrop */
+.centered{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 140px);background:linear-gradient(135deg,#e8f9f6 0%,#dff5f2 100%);position:relative;overflow:hidden}
+.centered::before{content:'';position:absolute;top:-50%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(121,195,179,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.centered::after{content:'';position:absolute;bottom:-30%;left:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(121,195,179,0.12) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.card{background:white;padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(12,20,40,.06);max-width:520px;position:relative;z-index:1}
 .login-card{width:100%;max-width:420px}
 .login-card h2{margin:0 0 6px}
 .login-card label{display:block;margin-top:12px;font-size:13px}
 .login-card input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef9;margin-top:6px}
 .login-card .help{margin-top:10px}
+.login-card button{margin-top:16px}
 
 /* Layout */
 .layout{display:flex;gap:24px;padding:28px 6vw;align-items:stretch;flex:1}
@@ -58,8 +60,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .sidebar .file:hover{background:#f1f7ff}
 /* The Update button is part of the sidebar and should be pushed to the bottom */
 .sidebar .update-btn{margin-top:auto}
-.tree a:hover{background:#f1f7ff}
-
+.tree a:hover{background:#f0fdfb}
+.tree a.active{background:#d4f1ed;color:#0b2340;font-weight:700}
+.tree a.active:hover{background:#c5ebe7}
 
 .content{flex:1;min-height:320px;padding:6px}
 .content-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -82,88 +85,3 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
   .sidebar{width:100%}
   .folders{justify-content:center}
 }
-=======
-:root{--accent:#0b6fb8;--dark:#0b2340;--muted:#6b7280;--bg:#f7fbff}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg)}
-body{min-height:100vh;display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--dark)}
-main{flex:1}
-
-header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:white;border-bottom:1px solid #eef3f8}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-.logo{width:44px;height:44px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.logo img{width:100%;height:100%;object-fit:cover;display:block}
-.brand h1{font-size:18px;margin:0;font-weight:700}
-.muted{color:var(--muted);font-size:13px}
-.small{font-size:13px}
-
-.nav-right{display:flex;align-items:center;gap:12px}
-.search-form{display:flex;align-items:center;margin-right:6px}
-.search-form input{width:260px;padding:8px 10px;border-radius:8px;border:1px solid #e6eef9;background:white}
-.search-results{background:white;border:1px solid #eef6ff;border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 8px 18px rgba(12,20,40,.04)}
-.search-results .item{padding:8px;border-radius:8px}
-.search-results .item + .item{border-top:1px solid #f1f7ff}
-
-/* Modal (update request) */
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60}
-.modal.show{display:flex}
-.modal-backdrop{position:absolute;inset:0;background:rgba(2,6,23,0.4)}
-.modal-panel{position:relative;background:white;border-radius:12px;padding:18px;z-index:61;max-width:520px;width:100%;box-shadow:0 20px 40px rgba(12,20,40,.12)}
-.modal-panel h3{margin:0 0 12px}
-.modal-panel label{display:block;margin-top:8px;font-size:13px}
-.modal-panel select,.modal-panel textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef9;margin-top:6px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-
-/* toast */
-.toast{position:fixed;right:20px;bottom:20px;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 8px 24px rgba(11,111,184,.16);z-index:70;opacity:0;transition:opacity .25s}
-.toast[hidden]{display:none}
-
-.btn-primary{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
-.btn-ghost{background:transparent;border:1px solid #e6eef9;color:var(--dark);padding:8px 12px;border-radius:8px;cursor:pointer}
-.error{color:#b91c1c;background:#fff1f2;padding:8px;border-radius:8px;border:1px solid #fecaca;margin-top:8px}
-
-/* Centered login */
-.centered{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 140px)}
-.card{background:white;padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(12,20,40,.06);max-width:520px}
-.login-card{width:100%;max-width:420px}
-.login-card h2{margin:0 0 6px}
-.login-card label{display:block;margin-top:12px;font-size:13px}
-.login-card input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef9;margin-top:6px}
-.login-card .help{margin-top:10px}
-
-/* Layout */
-.layout{display:flex;gap:24px;padding:28px 6vw;align-items:stretch;flex:1}
-.dashboard-layout{padding:20px}
-/* Make sidebar a column flex container so we can pin the Update button to the bottom */
-.sidebar{width:260px;background:transparent;display:flex;flex-direction:column;gap:8px}
-.tree a{display:block;padding:8px 10px;border-radius:8px;color:var(--dark);text-decoration:none}
-/* Ensure `.file` anchors (including the Update button) match the department link appearance */
-.sidebar .file{display:block;padding:8px 10px;border-radius:8px;color:var(--dark);text-decoration:none}
-.sidebar .file:hover{background:#f1f7ff}
-/* The Update button is part of the sidebar and should be pushed to the bottom */
-.sidebar .update-btn{margin-top:auto}
-.tree a:hover{background:#f1f7ff}
-
-
-.content{flex:1;min-height:320px;padding:6px}
-.content-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.content-header .breadcrumbs{font-size:13px;color:var(--muted);margin:0}
-.search-form{margin:0}
-@media (max-width:880px){.content-header{flex-direction:column;align-items:flex-start}.search-form input{width:100%;max-width:420px}}
-
-.folders{display:flex;gap:14px;flex-wrap:wrap}
-.folder-card{background:white;border-radius:12px;padding:16px;min-width:160px;box-shadow:0 6px 18px rgba(12,20,40,.04);cursor:pointer}
-.folder-card h3{margin:0 0 6px}
-
-.doc-list{margin-top:12px}
-.doc-item{background:white;border-radius:10px;padding:12px;border:1px solid #eef6ff;margin-bottom:8px}
-.doc-item a{color:var(--accent);text-decoration:none}
-.doc-item .meta{font-size:13px;color:var(--muted)}
-
-/* Responsive */
-@media (max-width:880px){
-  .layout{flex-direction:column;padding:16px}
-  .sidebar{width:100%}
-  .folders{justify-content:center}
-}
->>>>>>> fa9ca986de5d4d7f0d49175d24f77c02a30621e7
