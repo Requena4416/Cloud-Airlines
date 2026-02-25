@@ -58,8 +58,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 /* Ensure `.file` anchors (including the Update button) match the department link appearance */
 .sidebar .file{display:block;padding:8px 10px;border-radius:8px;color:var(--dark);text-decoration:none}
 .sidebar .file:hover{background:#f1f7ff}
-/* The Update button is part of the sidebar and should be pushed to the bottom */
-.sidebar .update-btn{margin-top:auto}
+/* Bottom-align the Update/GitHub button group: only the first of the group gets auto top margin
+  so the two anchors remain adjacent and are pushed together to the bottom. */
+.sidebar .update-btn:first-of-type{margin-top:auto}
 .tree a:hover{background:#f0fdfb}
 .tree a.active{background:#d4f1ed;color:#0b2340;font-weight:700}
 .tree a.active:hover{background:#c5ebe7}

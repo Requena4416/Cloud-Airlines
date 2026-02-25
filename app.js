@@ -270,7 +270,7 @@ async function onDeptClick(dept, linkEl) {
     console.error("S3 Error Details:", err);
     docsArea.innerHTML = `<div class="error">
       <strong>Access Denied</strong><br>
-      <small>${err.message}</small>
+      <small>You do not have access to the files in this department.</small>
     </div>`;
   }
 }
