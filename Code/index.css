@@ -1,0 +1,44 @@
+:root{--accent:#1e90ff;--dark:#0b2340;--muted:#6b7280;--card:#ffffffcc}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f1724}
+body{background:linear-gradient(180deg,#f7fbff 0%,#eef7ff 50%);display:flex;flex-direction:column}
+
+/* Header */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{width:44px;height:44px;display:inline-block;border-radius:10px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;background:transparent}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+.brand h1{font-size:18px;margin:0;font-weight:600}
+nav{display:flex;gap:18px;align-items:center}
+nav a{color:var(--dark);text-decoration:none;font-weight:500}
+.cta{background:var(--accent);color:white;padding:8px 14px;border-radius:8px;text-decoration:none}
+
+/* File-system layout */
+.layout{display:flex;gap:24px;padding:28px 6vw;align-items:flex-start}
+.sidebar{width:300px;background:rgba(255,255,255,.5);border-radius:12px;padding:20px;box-shadow:0 8px 28px rgba(12,20,40,.06);border:1px solid rgba(255,255,255,.8)}
+.sidebar h3{margin:0 0 16px;font-size:16px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.5px}
+.tree{list-style:none;margin:0;padding:0}
+.tree details{margin-bottom:8px}
+summary{list-style:none;cursor:pointer;padding:10px 12px;border-radius:8px;font-weight:600;transition:all .2s;display:flex;align-items:center}
+summary:hover{background:rgba(30,144,255,.1);color:var(--accent)}
+summary::-webkit-details-marker{display:none}
+.folder{display:flex;align-items:center;gap:8px;font-weight:600}
+.folder::before{content:'📁';font-size:14px}
+.file{display:block;padding:10px 12px;border-radius:8px;color:var(--dark);text-decoration:none;transition:all .2s;margin-bottom:4px;position:relative;padding-left:28px}
+.file::before{content:'📄';position:absolute;left:12px;font-size:14px}
+.file:hover{background:rgba(30,144,255,.15);color:var(--accent);transform:translateX(4px)}
+.sidebar hr{border:none;border-top:1px solid rgba(30,144,255,.2);margin:16px 0}
+.sidebar button{width:100%;padding:10px 12px;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s;font-size:14px}
+.sidebar button:hover{background:#0d6dd8;transform:translateY(-2px);box-shadow:0 4px 12px rgba(30,144,255,.3)}
+
+.content{flex:1;min-height:320px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.5));padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(12,20,40,.06)}
+.breadcrumbs{font-size:13px;color:var(--muted);margin-bottom:10px}
+.doc{padding:14px;border-radius:10px;background:rgba(255,255,255,.5);border:1px solid #eef6ff}
+.doc h2{margin:0 0 8px}
+
+footer{margin-top:auto;padding:28px 6vw;background:linear-gradient(180deg,transparent,#f1f5f9);display:flex;justify-content:space-between;gap:24px}
+.links{display:flex;gap:20px}
+.small{color:var(--muted);font-size:13px}
+
+/* Responsive */
+@media (max-width:880px){.hero{grid-template-columns:1fr;padding:28px 5vw}.booking{width:100%}.features{flex-direction:column;padding:20px 5vw}.logo{width:40px;height:40px}}

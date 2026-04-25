@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cloud Airlines — Sign In</title>
+    <link rel="icon" href="logo.png" type="image/icon type">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1500.0/aws-sdk.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
+    <style>
+        @keyframes expandFade {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        body { margin: 0; padding: 0; background-color: #000; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        function LoginComponent() {
+            const [mousePos, setMousePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+            const [particles, setParticles] = useState([]);
+            const planeRef = useRef(null);
+            const rafRef = useRef(null);
+
+            const handleSignIn = async (e) => {
+                e.preventDefault();
+                const errEl = document.getElementById('login-error');
+                const email = e.target.email.value.trim();
+                const password = e.target.password.value;
+
+                if (errEl) errEl.style.display = 'none';
+
+                try {
+                    // Calls the window-exposed apiAuth from app.js
+                    const user = await window.apiAuth(email, password);
+                    localStorage.setItem('cloud_user', JSON.stringify(user));
+                    window.location.href = 'dashboard.html';
+                } catch (err) {
+                    if (errEl) {
+                        errEl.textContent = err.message || 'Authentication Failed';
+                        errEl.style.display = 'block';
+                    }
+                }
+            };
+
+            useEffect(() => {
+                const handleMouseMove = (e) => {
+                    setMousePos({ x: e.clientX, y: e.clientY });
+                    const newP = { id: Date.now() + Math.random(), x: e.clientX - 20, y: e.clientY + 10 };
+                    setParticles(prev => [...prev.slice(-15), newP]);
+                    setTimeout(() => setParticles(prev => prev.filter(p => p.id !== newP.id)), 3000);
+                };
+                document.addEventListener('mousemove', handleMouseMove);
+                return () => document.removeEventListener('mousemove', handleMouseMove);
+            }, []);
+
+            useEffect(() => {
+                const updatePlane = () => {
+                    if (planeRef.current) {
+                        const offsetX = mousePos.x - window.innerWidth / 2;
+                        const offsetY = mousePos.y - window.innerHeight / 2;
+                        planeRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(45deg)`;
+                    }
+                    rafRef.current = requestAnimationFrame(updatePlane);
+                };
+                rafRef.current = requestAnimationFrame(updatePlane);
+                return () => cancelAnimationFrame(rafRef.current);
+            }, [mousePos]);
+
+            return (
+                <div className="min-h-screen flex items-center justify-center relative overflow-hidden" 
+                     style={{ backgroundImage: 'url("plane.png")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    
+                    {particles.map(p => (
+                        <div key={p.id} className="absolute w-3 h-3 bg-white rounded-full opacity-60" 
+                             style={{ left: p.x, top: p.y, pointerEvents: 'none', animation: 'expandFade 2s forwards' }}></div>
+                    ))}
+
+                    <svg ref={planeRef} className="absolute w-12 h-12 opacity-70" 
+                         style={{ color: '#6B46C1', pointerEvents: 'none', willChange: 'transform' }} viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+
+                    <div className="bg-white rounded-xl p-8 max-w-sm w-full z-10 shadow-2xl" style={{ marginLeft: '40%' }}>
+                        <div className="flex justify-center mb-4"><img src="logo.png" className="w-12 h-12" /></div>
+                        <h2 className="text-xl font-bold text-center text-gray-800 mb-1">Cloud Airlines</h2>
+                        <p className="text-sm text-center text-gray-500 mb-6">Employee Policy Portal</p>
+                        
+                        <div id="login-error" className="mb-4 p-3 bg-red-50 text-red-600 rounded border border-red-200 text-xs text-center" style={{ display: 'none' }}></div>
+                        
+                        <form onSubmit={handleSignIn}>
+                            <div className="mb-4">
+                                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Email</label>
+                                <input name="email" type="email" className="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-purple-400 outline-none" required />
+                            </div>
+                            <div className="mb-6">
+                                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Password</label>
+                                <input name="password" type="password" className="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-purple-400 outline-none" required />
+                            </div>
+                            <button type="submit" className="w-full py-3 rounded-lg font-bold text-white transition-all hover:opacity-90" style={{ backgroundColor: '#65a89a' }}>
+                                Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+        ReactDOM.render(<LoginComponent />, document.getElementById('root'));
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -53,17 +53,24 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .layout{display:flex;gap:24px;padding:28px 6vw;align-items:stretch;flex:1}
 .dashboard-layout{padding:20px}
 /* Make sidebar a column flex container so we can pin the Update button to the bottom */
-.sidebar{width:260px;background:transparent;display:flex;flex-direction:column;gap:8px}
-.tree a{display:block;padding:8px 10px;border-radius:8px;color:var(--dark);text-decoration:none}
+.sidebar{width:260px;background:transparent;display:flex;flex-direction:column;gap:12px}
+#dept-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+#dept-list a{display:block;padding:12px 14px;border-radius:10px;color:var(--dark);text-decoration:none;background:rgba(255,255,255,0.7);border:2px solid transparent;font-weight:500;transition:all 0.3s ease;cursor:pointer;text-align:center}
+#dept-list a:hover{background:rgba(121,195,179,0.2);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(121,195,179,0.2)}
+#dept-list a.active{background:var(--accent);color:white;border-color:var(--accent);font-weight:700;box-shadow:0 6px 16px rgba(121,195,179,0.3)}
+#dept-list a.active:hover{background:#6ab8a7;box-shadow:0 8px 20px rgba(121,195,179,0.4)}
+
+/* Button styling for Update Request and Sign Out */
+.btn-action{display:block;padding:12px 14px;border-radius:10px;color:var(--dark);text-decoration:none;background:rgba(255,255,255,0.7);border:2px solid transparent;font-weight:500;transition:all 0.3s ease;cursor:pointer;text-align:center;width:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;font-size:inherit}
+button.btn-action{font-size:inherit;padding:12px 14px;border:2px solid transparent}
+.btn-action:hover{background:rgba(121,195,179,0.2);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(121,195,179,0.2)}
+.btn-action:active{transform:translateY(0)}
 /* Ensure `.file` anchors (including the Update button) match the department link appearance */
 .sidebar .file{display:block;padding:8px 10px;border-radius:8px;color:var(--dark);text-decoration:none}
 .sidebar .file:hover{background:#f1f7ff}
 /* Bottom-align the Update/GitHub button group: only the first of the group gets auto top margin
   so the two anchors remain adjacent and are pushed together to the bottom. */
 .sidebar .update-btn:first-of-type{margin-top:auto}
-.tree a:hover{background:#f0fdfb}
-.tree a.active{background:#d4f1ed;color:#0b2340;font-weight:700}
-.tree a.active:hover{background:#c5ebe7}
 
 .content{flex:1;min-height:320px;padding:6px}
 .content-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -71,9 +78,45 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .search-form{margin:0}
 @media (max-width:880px){.content-header{flex-direction:column;align-items:flex-start}.search-form input{width:100%;max-width:420px}}
 
-.folders{display:flex;gap:14px;flex-wrap:wrap}
-.folder-card{background:white;border-radius:12px;padding:16px;min-width:160px;box-shadow:0 6px 18px rgba(12,20,40,.04);cursor:pointer}
-.folder-card h3{margin:0 0 6px}
+/* Update these specific sections in your CSS file */
+
+.folders {
+  display: flex;
+  flex-direction: row; /* Aligns items horizontally */
+  gap: 20px;           /* Space between the cards */
+  flex-wrap: wrap;     /* Allows them to wrap to the next line on small screens */
+  margin-top: 20px;
+}
+
+.folder-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  /* Remove min-width if it's too large, or set a specific width */
+  width: 280px; 
+  box-shadow: 0 6px 18px rgba(12, 20, 40, .05);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #eef6ff;
+  text-align: center; /* Centers the text inside the card */
+}
+
+.folder-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(12, 20, 40, .1);
+}
+
+.folder-card h3 {
+  margin: 0 0 8px;
+  color: var(--dark);
+  font-size: 1.1rem;
+}
+
+.folder-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
 
 .doc-list{margin-top:12px}
 .doc-item{background:white;border-radius:10px;padding:12px;border:1px solid #eef6ff;margin-bottom:8px}
